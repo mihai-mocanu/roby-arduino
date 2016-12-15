@@ -165,10 +165,10 @@
 
 
 int maximumRange = 3000; // Maximum range needed
-int minimumRange = 200; // Minimum range needed
+int minimumRange = 300; // Minimum range needed
 
 float dist, soundSpeed = 331.3 + 0.606 * AIR_TEMP; // Sound speed in meters per second
-
+char incomingByte;
 // Declare classes for Servo connectors of the MotorShield.
 //Servo servo_1;
 //Servo servo_2;
@@ -224,25 +224,86 @@ void loop()
    
   if (dist < minimumRange) {
     Serial.println(0);
-    motor(4, RELEASE, 0);
+    if (incomingByte != 'b') {
+      driveStop();
+    }
     delay(500);
   } else if(dist > maximumRange) {
     Serial.println("INFINITE");
   } else {
     Serial.println(dist);
-    motor(4, FORWARD, 255);
-//    delay(2000);
-    // Be friendly to the motor: stop it before reverse.
-    
-//    motor(2, BACKWARD, 255);
-//    delay(2000);
-//    motor(2, RELEASE, 0);
-//    delay(500);
+  }
+  
+  if (Serial.available() > 0) {
+      // read the incoming byte:
+      incomingByte = Serial.read();
+
+      // say what you got:
+      Serial.print("I received: ");
+      Serial.println(incomingByte);
+      switch (incomingByte)
+      {
+        case 'f':
+          driveForward();
+          break;
+        case 'b':
+          driveBackward();
+          break;
+        case 'l':
+          driveLeft();
+          break;
+        case 'r':
+          driveRight();
+          break;
+        case 's':
+          driveStop();
+          break;
+      }
   }
 
  
  //Delay 50ms before next reading.
-  delay(50);
+  delay(10);
+}
+
+void driveForward()
+{
+  motor(1, FORWARD, 250);
+  motor(2, FORWARD, 250);
+  motor(3, FORWARD, 250);
+  motor(4, FORWARD, 250);
+}
+
+void driveBackward()
+{
+  motor(1, BACKWARD, 250);
+  motor(2, BACKWARD, 250);
+  motor(3, BACKWARD, 250);
+  motor(4, BACKWARD, 250);
+}
+
+void driveLeft()
+{
+  motor(1, FORWARD, 250);
+  motor(4, FORWARD, 250);
+  motor(3, RELEASE, 0);
+  motor(2, RELEASE, 0);
+}
+
+void driveRight()
+{
+  motor(2, FORWARD, 250);
+  motor(3, FORWARD, 250);
+  motor(1, RELEASE, 0);
+  motor(4, RELEASE, 0);
+}
+
+void driveStop()
+{
+  motor(1, RELEASE, 0);
+  motor(2, RELEASE, 0);
+  motor(3, RELEASE, 0);
+  motor(4, RELEASE, 0);
 }
 
 float getDistanceAvg() 
@@ -252,7 +313,7 @@ float getDistanceAvg()
   
   for (int i=0; i < DIST_RDS_TO_AVG; i++) {
     ave.push(getDistanceRead());
-    delay(50);
+    delay(30);
   }
   
   average = ave.mean();
