@@ -150,13 +150,13 @@
 #define TRIG_PIN 23
 
 // Number of distance reads to build the average on
-#define DIST_RDS_TO_AVG 10
+#define DIST_RDS_TO_AVG 5
 
 // Multiplier of standard deviation used as an absolute distance from stddev to trim distance measure outliars
 #define DIST_OUTL_STDDEV_MULT 2
 
 // Environment temperature in degrees celsius
-#define AIR_TEMP 23.2
+#define AIR_TEMP 21.2
 // ______________________________________
 
 // Onboard LED
@@ -165,7 +165,7 @@
 
 
 int maximumRange = 3000; // Maximum range needed
-int minimumRange = 300; // Minimum range needed
+int minimumRange = 400; // Minimum range needed
 
 float dist, soundSpeed = 331.3 + 0.606 * AIR_TEMP; // Sound speed in meters per second
 char incomingByte;
@@ -227,7 +227,7 @@ void loop()
     if (incomingByte != 'b') {
       driveStop();
     }
-    delay(500);
+    delay(50);
   } else if(dist > maximumRange) {
     Serial.println("INFINITE");
   } else {
@@ -288,6 +288,8 @@ void driveLeft()
   motor(4, FORWARD, 250);
   motor(3, RELEASE, 0);
   motor(2, RELEASE, 0);
+  motor(3, BACKWARD, 250);
+  motor(2, BACKWARD, 250);
 }
 
 void driveRight()
@@ -296,6 +298,8 @@ void driveRight()
   motor(3, FORWARD, 250);
   motor(1, RELEASE, 0);
   motor(4, RELEASE, 0);
+  motor(1, BACKWARD, 250);
+  motor(4, BACKWARD, 250);
 }
 
 void driveStop()
@@ -313,7 +317,7 @@ float getDistanceAvg()
   
   for (int i=0; i < DIST_RDS_TO_AVG; i++) {
     ave.push(getDistanceRead());
-    delay(30);
+    delay(50);
   }
   
   average = ave.mean();
