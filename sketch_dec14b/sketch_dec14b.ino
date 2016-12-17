@@ -320,7 +320,7 @@ float getDistanceAvg()
   
   for (int i=0; i < DIST_RDS_TO_AVG; i++) {
     ave.push(getDistanceRead());
-    delay(50);
+    delay(30);
   }
   
   average = ave.mean();
