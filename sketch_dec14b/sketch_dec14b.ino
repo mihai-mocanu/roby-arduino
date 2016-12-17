@@ -156,7 +156,7 @@
 #define DIST_OUTL_STDDEV_MULT 2
 
 // Environment temperature in degrees celsius
-#define AIR_TEMP 21.2
+#define AIR_TEMP 21
 // ______________________________________
 
 // Onboard LED
@@ -263,11 +263,12 @@ void loop()
 
  
  //Delay 50ms before next reading.
-  delay(10);
 }
 
 void driveForward()
 {
+  driveStop();
+  delay(100);
   motor(1, FORWARD, 250);
   motor(2, FORWARD, 250);
   motor(3, FORWARD, 250);
@@ -276,6 +277,8 @@ void driveForward()
 
 void driveBackward()
 {
+  driveStop();
+  delay(100);
   motor(1, BACKWARD, 250);
   motor(2, BACKWARD, 250);
   motor(3, BACKWARD, 250);
@@ -284,20 +287,20 @@ void driveBackward()
 
 void driveLeft()
 {
+  driveStop();
+  delay(100);
   motor(1, FORWARD, 250);
   motor(4, FORWARD, 250);
-  motor(3, RELEASE, 0);
-  motor(2, RELEASE, 0);
   motor(3, BACKWARD, 250);
   motor(2, BACKWARD, 250);
 }
 
 void driveRight()
 {
+  driveStop();
+  delay(100);
   motor(2, FORWARD, 250);
   motor(3, FORWARD, 250);
-  motor(1, RELEASE, 0);
-  motor(4, RELEASE, 0);
   motor(1, BACKWARD, 250);
   motor(4, BACKWARD, 250);
 }
@@ -335,17 +338,16 @@ float getDistanceRead()
 {
   long duration, distance; // Duration used to calculate distance
    
-   
   /* The following trigPin/echoPin cycle is used to determine the
   distance of the nearest object by bouncing soundwaves off of it. */ 
   digitalWrite(TRIG_PIN, LOW); 
-  delayMicroseconds(2); 
+  delayMicroseconds(5);
   
   digitalWrite(TRIG_PIN, HIGH);
-  delayMicroseconds(10); 
+  delayMicroseconds(10);
   
   digitalWrite(TRIG_PIN, LOW);
-  duration = pulseIn(ECHO_PIN, HIGH);
+  duration = pulseIn(ECHO_PIN, HIGH, 50000);
   // Calculate the distance (in mm) based on the speed of sound.
   // distance = duration/2.913752914/2;
   distance = duration * (soundSpeed/1000) * 0.5;
